@@ -1,0 +1,12 @@
+#root {
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.title {
+  margin-block-start: 0;
+}
+
+.description {
+  margin-block: 1rem;
+}

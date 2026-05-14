@@ -1,0 +1,3 @@
+.kix-cursor-name:not(:hover) {
+  opacity: var(--gnoname-opacity) !important;
+}
