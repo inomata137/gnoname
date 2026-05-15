@@ -1,7 +1,8 @@
 import { useState, useEffect, use } from 'react'
 
-import './OpacitySetter.css'
 import { STORAGE_KEY } from '../constant'
+
+import './OpacitySetter.css'
 
 const DEFAULT_OPACITY = 0.3
 
@@ -13,8 +14,15 @@ async function getOpacityFromStorage(): Promise<number> {
     case 'number':
       return opacity
     default:
-      return DEFAULT_OPACITY
+      return await saveOpacity(DEFAULT_OPACITY)
   }
+}
+
+async function saveOpacity(opacity: number) {
+  await browser.storage.local.set({
+    [STORAGE_KEY]: opacity,
+  })
+  return opacity
 }
 
 const opacityPromise = getOpacityFromStorage()
@@ -24,9 +32,7 @@ export function OpacitySetter() {
   const [opacity, setOpacity] = useState(defaultOpacity)
 
   useEffect(() => {
-    browser.storage.local.set({
-      [STORAGE_KEY]: opacity,
-    })
+    saveOpacity(opacity)
   }, [opacity])
 
   return (
