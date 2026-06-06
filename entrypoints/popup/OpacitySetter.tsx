@@ -1,39 +1,18 @@
-import { useState, useEffect, use } from 'react'
+import { useState, use, Suspense } from 'react'
 
-import { STORAGE_KEY } from '../constant'
+import { saveOpacity, getOpacity } from '@/lib/storage'
 
 import './OpacitySetter.css'
 
-const DEFAULT_OPACITY = 0.3
-
-async function getOpacityFromStorage(): Promise<number> {
-  const { opacity } = await browser.storage.local.get('opacity')
-  switch (typeof opacity) {
-    case 'string':
-      return parseFloat(opacity)
-    case 'number':
-      return opacity
-    default:
-      return await saveOpacity(DEFAULT_OPACITY)
-  }
-}
-
-async function saveOpacity(opacity: number) {
-  await browser.storage.local.set({
-    [STORAGE_KEY]: opacity,
-  })
-  return opacity
-}
-
-const opacityPromise = getOpacityFromStorage()
-
-export function OpacitySetter() {
-  const defaultOpacity = use(opacityPromise)
+function OpacitySetterInner(props: { opacityPromise: Promise<number> }) {
+  const defaultOpacity = use(props.opacityPromise)
   const [opacity, setOpacity] = useState(defaultOpacity)
 
-  useEffect(() => {
-    saveOpacity(opacity)
-  }, [opacity])
+  const onSliderChange: React.ChangeEventHandler<HTMLInputElement, HTMLInputElement> = (e) => {
+    const value = e.target.valueAsNumber
+    setOpacity(value)
+    saveOpacity(value)
+  }
 
   return (
     <div className="slider-container">
@@ -47,10 +26,19 @@ export function OpacitySetter() {
         min="0"
         max="1"
         step="0.05"
-        defaultValue={opacity}
-        onChange={(e) => setOpacity(parseFloat(e.target.value))}
+        value={opacity}
+        onChange={onSliderChange}
       />
       <span className="slider-indicator">{opacity}</span>
     </div>
+  )
+}
+
+export function OpacitySetter() {
+  const opacityPromise = getOpacity()
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OpacitySetterInner opacityPromise={opacityPromise} />
+    </Suspense>
   )
 }
