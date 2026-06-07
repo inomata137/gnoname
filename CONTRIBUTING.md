@@ -1,6 +1,9 @@
 ## Development
 
 ```console
+# activate devShell
+$ nix develop
+
 # dev build
 $ pnpm run dev
 
@@ -8,16 +11,5 @@ $ pnpm run dev
 $ pnpm run build
 
 # generate icon
-$ uv run scripts/icon.py
+$ python3 scripts/icon.py
 ```
-
-## Trouble shooting
-
-if generating icon fails with something like `no library called "cairo-2" was found`, put
-
-```
-export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib"
-```
-
-in your `.envrc`.
-see: https://github.com/Kozea/CairoSVG/issues/392
